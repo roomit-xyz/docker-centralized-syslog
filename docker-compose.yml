@@ -1,0 +1,52 @@
+#
+# Created : Dwiyan
+# Maintenance : github.com/luneareth
+
+
+version: "3"
+
+services:
+
+   tftp-server:
+        image: tftp-server
+        build: Docker-Builds/tftp/
+        ports:
+           - "69:69/udp"
+        volumes:
+           - "/data/tftp:/data"
+        container_name: tftp-server
+
+   syslog-networks:
+        image: logging.wajatmaka.com:net
+        build: Docker-Builds/syslog/
+        ports:
+           - "514:514/udp" #For all switch cisco | switch-cisco.conf
+           - "5140:5140/udp" #For asa-b | asa-b.conf
+           - "5141:5141/udp" #For paloalto-b | paloalto-b.conf
+           - "5142:5142/udp" #For switch netgear GS724TPv2 ProSAFE 24-Port | switch-netgear-a.conf
+           - "5143:5143/udp" #For Router Mikrotik qos-gw.wajatmaka.com | router-mikrotik-a.conf 
+           - "5144:5144/udp" #For Router Mikrotik QA DEV | router-mikrotik-b.conf 
+           - "5145:5145/udp" #For Netgears M5300-28G3 ProSafe 24-port Gigabit L3 | switch-netgear-b.conf
+        volumes:
+           - "/data/log/networks:/var/log/network" #logging stdout
+           - "/docker/conf.d/networks/asa-b.conf:/etc/syslog-ng/conf.d/networks/asa-b.conf" #configuration
+           - "/docker/conf.d/networks/paloalto-b.conf:/etc/syslog-ng/conf.d/networks/paloalto-b.conf" #configuration
+           - "/docker/conf.d/networks/switch-cisco.conf:/etc/syslog-ng/conf.d/networks/switch-cisco.conf" #configuration
+           - "/docker/conf.d/networks/switch-netgear-a.conf:/etc/syslog-ng/conf.d/networks/switch-netgear-a.conf" #configuration
+           - "/docker/conf.d/networks/switch-netgear-b.conf:/etc/syslog-ng/conf.d/networks/switch-netgear-b.conf" #configuration
+           - "/docker/conf.d/networks/router-mikrotik-a.conf:/etc/syslog-ng/conf.d/networks/router-mikrotik-a.conf" #configuration
+           - "/docker/conf.d/networks/router-mikrotik-b.conf:/etc/syslog-ng/conf.d/networks/router-mikrotik-b.conf" #configuration
+        container_name: syslog-networks
+
+   syslog-os:
+        image: logging.wajatmaka.com:net
+        build: Docker-Builds/syslog/
+        ports:
+           - "11:11/udp" #mbsuite.wajatmaka.com
+        volumes:
+           - "/data/log/os:/var/log/os" #logging stdout
+           - "/docker/conf.d/os/var-global.conf:/etc/syslog-ng/conf.d/os/var-global.conf" #configuration
+           - "/docker/conf.d/os/mbsuite.conf:/etc/syslog-ng/conf.d/os/mbsuite.conf" #configuration
+        container_name: syslog-os
+
+
